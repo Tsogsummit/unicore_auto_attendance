@@ -1,0 +1,11 @@
+version: '3.8'
+
+services:
+  unicore-auto-attendance:
+    build: .
+    container_name: unicore_auto_attendance
+    restart: always
+    env_file:
+      - .env
+    environment:
+      - TZ=Asia/Ulaanbaatar
