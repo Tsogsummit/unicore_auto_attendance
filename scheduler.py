@@ -34,11 +34,14 @@ def get_daily_schedule(target_date: date = None) -> Dict[str, Any]:
     """
     Calculates the random check-in and check-out schedule for a given date.
     Default date is today in Mongolia Timezone.
+    Runs on Wednesday (2), Thursday (3), and Friday (4).
     """
     if target_date is None:
         target_date = datetime.now(config.MONGOLIA_TZ).date()
 
-    is_weekend = target_date.weekday() >= 5  # 5 = Saturday, 6 = Sunday
+    # Python weekday: Monday=0, Tuesday=1, Wednesday=2, Thursday=3, Friday=4, Saturday=5, Sunday=6
+    is_active_day = target_date.weekday() in (2, 3, 4)
+    should_skip = not is_active_day
 
     check_in_dt = get_random_datetime(
         target_date, 
@@ -55,8 +58,8 @@ def get_daily_schedule(target_date: date = None) -> Dict[str, Any]:
     return {
         "date": target_date.strftime("%Y-%m-%d"),
         "weekday": target_date.strftime("%A"),
-        "is_weekend": is_weekend,
-        "should_skip": is_weekend and config.SKIP_WEEKENDS,
+        "is_weekend": target_date.weekday() >= 5,
+        "should_skip": should_skip,
         "check_in": check_in_dt,
         "check_out": check_out_dt,
     }

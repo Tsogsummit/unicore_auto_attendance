@@ -66,13 +66,13 @@ def print_test_schedule(days: int = 7):
     print(f"Timezone: {config.TIMEZONE_STR}")
     print(f"Check-In Range: {config.CHECKIN_START_TIME} - {config.CHECKIN_END_TIME}")
     print(f"Check-Out Range: {config.CHECKOUT_START_TIME} - {config.CHECKOUT_END_TIME}")
-    print(f"Skip Weekends: {config.SKIP_WEEKENDS}\n" + "-"*60)
+    print(f"Active Weekdays: Wednesday-Friday\n" + "-"*60)
 
     today = datetime.now(config.MONGOLIA_TZ).date()
     for i in range(days):
         target_date = today + timedelta(days=i)
         sched = get_daily_schedule(target_date)
-        skip_label = " [SKIP WEEKEND]" if sched["should_skip"] else ""
+        skip_label = " [SKIP INACTIVE DAY]" if sched["should_skip"] else ""
         print(f"📅 {sched['date']} ({sched['weekday']}){skip_label}")
         if not sched["should_skip"]:
             print(f"   🟢 Check-In:  {sched['check_in'].strftime('%H:%M:%S')}")
@@ -82,8 +82,8 @@ def print_test_schedule(days: int = 7):
 def run_cron_checkin():
     """Triggered by cron at 08:30: picks random sleep duration (0-20 min) before checking in."""
     today = datetime.now(config.MONGOLIA_TZ).date()
-    if today.weekday() >= 5 and config.SKIP_WEEKENDS:
-        print("[CRON CHECKIN] Skipping weekend today.")
+    if today.weekday() not in config.ACTIVE_WEEKDAYS:
+        print("[CRON CHECKIN] Skipping inactive day today.")
         return
 
     delay_seconds = random.randint(0, 1200) # 0 to 20 minutes
@@ -94,8 +94,8 @@ def run_cron_checkin():
 def run_cron_checkout():
     """Triggered by cron at 16:10: picks random sleep duration (0-20 min) before checking out."""
     today = datetime.now(config.MONGOLIA_TZ).date()
-    if today.weekday() >= 5 and config.SKIP_WEEKENDS:
-        print("[CRON CHECKOUT] Skipping weekend today.")
+    if today.weekday() not in config.ACTIVE_WEEKDAYS:
+        print("[CRON CHECKOUT] Skipping inactive day today.")
         return
 
     delay_seconds = random.randint(0, 1200) # 0 to 20 minutes
@@ -108,7 +108,7 @@ def run_daemon():
     print(f"📍 Timezone: {config.TIMEZONE_STR}")
     print(f"⏰ Target Check-In: {config.CHECKIN_START_TIME} - {config.CHECKIN_END_TIME}")
     print(f"⏰ Target Check-Out: {config.CHECKOUT_START_TIME} - {config.CHECKOUT_END_TIME}")
-    print(f"📅 Skip Weekends: {config.SKIP_WEEKENDS}")
+    print(f"📅 Active Days: Wednesday-Friday")
     print(f"📍 Location: {config.LOCATION_NAME} ({config.CENTER_LATITUDE}, {config.CENTER_LONGITUDE})\n")
 
     while True:
@@ -117,7 +117,7 @@ def run_daemon():
         sched = get_daily_schedule(today)
 
         if sched["should_skip"]:
-            print(f"[{format_dt(now)}] Today is {sched['weekday']} ({sched['date']}). Skipping weekend. Sleeping until tomorrow...")
+            print(f"[{format_dt(now)}] Today is {sched['weekday']} ({sched['date']}). Skipping inactive day. Sleeping until tomorrow...")
             tomorrow_start = datetime(today.year, today.month, today.day, 0, 0, 0, tzinfo=config.MONGOLIA_TZ) + timedelta(days=1)
             sleep_time = max(10, (tomorrow_start - now).total_seconds())
             time.sleep(sleep_time)

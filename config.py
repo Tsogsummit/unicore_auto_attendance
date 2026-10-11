@@ -25,20 +25,27 @@ try:
 except Exception:
     MONGOLIA_TZ = ZoneInfo("Asia/Ulaanbaatar")
 
-CHECKIN_START_TIME = os.getenv("CHECKIN_START_TIME", "08:30")   # 08:30 AM
-CHECKIN_END_TIME = os.getenv("CHECKIN_END_TIME", "08:50")       # 08:50 AM
-CHECKOUT_START_TIME = os.getenv("CHECKOUT_START_TIME", "16:10") # 04:10 PM
+CHECKIN_START_TIME = os.getenv("CHECKIN_START_TIME", "07:30")   # 07:30 AM
+CHECKIN_END_TIME = os.getenv("CHECKIN_END_TIME", "07:45")       # 07:50 AM
+CHECKOUT_START_TIME = os.getenv("CHECKOUT_START_TIME", "16:15") # 04:10 PM
 CHECKOUT_END_TIME = os.getenv("CHECKOUT_END_TIME", "16:30")     # 04:30 PM
 
 SKIP_WEEKENDS = os.getenv("SKIP_WEEKENDS", "true").lower() in ("true", "1", "yes")
 
 # Location Settings (Default: Tselmeg Digital International School)
-CENTER_LATITUDE = float(os.getenv("CENTER_LATITUDE", "47.896883"))
-CENTER_LONGITUDE = float(os.getenv("CENTER_LONGITUDE", "106.889669"))
-MAX_DISTANCE_METERS = float(os.getenv("MAX_DISTANCE_METERS", "200.0"))
+CENTER_LATITUDE = float(os.getenv("CENTER_LATITUDE", "47.89679317"))
+CENTER_LONGITUDE = float(os.getenv("CENTER_LONGITUDE", "106.88973599"))
+MAX_DISTANCE_METERS = float(os.getenv("MAX_DISTANCE_METERS", "100.0"))
 LOCATION_NAME = os.getenv("LOCATION_NAME", "Tselmeg Digital International School")
 
 # Webhook notifications (Optional)
 DISCORD_WEBHOOK_URL = os.getenv("DISCORD_WEBHOOK_URL", "")
 TELEGRAM_BOT_TOKEN = os.getenv("TELEGRAM_BOT_TOKEN", "")
 TELEGRAM_CHAT_ID = os.getenv("TELEGRAM_CHAT_ID", "")
+
+# Mobile attendance API settings
+TENANT_ID = os.getenv("TENANT_ID", "tenant_65")
+ATTENDANCE_ACCURACY = float(os.getenv("ATTENDANCE_ACCURACY", "12.0"))
+ATTENDANCE_RULE_ID = int(os.getenv("ATTENDANCE_RULE_ID", "5"))
+
+ATTENDANCE_DEVICE_UID = os.getenv("ATTENDANCE_DEVICE_UID", "")
